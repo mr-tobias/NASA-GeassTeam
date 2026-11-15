@@ -54,3 +54,4 @@ This website is a documentation/showcase page. It does **not** run the Matplotli
 
 ## Credits
 Project content and Python source supplied by the user. Visual layout prepared as a static project website.
+\n\nThe footer-area attribution section includes the NASA Space Apps Challenge and NASA logos supplied for this project. They identify the event context and do not imply endorsement.\n
