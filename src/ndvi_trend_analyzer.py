@@ -11,32 +11,31 @@ import numpy as np
 import rasterio
 from scipy import stats
 
-
+# --------------------------------------------------------------------------
 # Configuration
-
-
-DATA_DIR = "data/modis_fake"                
-NDVI_TAG = "250m_16_days_NDVI"          
+# --------------------------------------------------------------------------
+DATA_DIR = "data/modis_fake"                 # folder with ALL 16-day GeoTIFFs (2000-present)
+NDVI_TAG = "250m_16_days_NDVI"          # text that identifies NDVI files
 QA_TAG = "250m_16_days_pixel_reliability"
-DATE_RE = re.compile(r"doy(\d{4})(\d{3})")   
+DATE_RE = re.compile(r"doy(\d{4})(\d{3})")   # AppEEARS naming: ..._doy2020017000000_...
 SCALE = 0.0001                          # MODIS NDVI scale factor
 VALID_RANGE = (-0.2, 1.0)               # physically sensible NDVI after scaling
-GOOD_QA = (0,)                          
-MIN_COMPOSITES = 12                     
-MAX_SIDE = 500                          
+GOOD_QA = (0,)                          # 0 = good; use (0, 1) to also accept marginal
+MIN_COMPOSITES = 12                     # a cell needs this many valid 16-day composites per year
+MAX_SIDE = 500                          # block-average so the grid is at most this big (4 GB RAM!)
 ALPHA = 0.05
 MIN_VALID_FRAC = 0.6
 BACKEND = "TkAgg"
 AGGREGATIONS = {"Annual mean": np.nanmean, "Annual peak": np.nanmax}
-OUTPUT_DIR = "outputs"                  
-CITIES = [("San Juan", -31.5375, -68.5364)]   
+OUTPUT_DIR = "outputs"                  # where the Save button writes PNG + CSV
+CITIES = [("San Juan", -31.5375, -68.5364)]   # (label, lat, lon) reference points on the map
 
 
-# Data: MODIS GeoTIFF time series
-
-
+# --------------------------------------------------------------------------
+# Data: MODIS GeoTIFF time series -> annual NDVI cube (year, row, col)
+# --------------------------------------------------------------------------
 def block_mean(a, k):
-    
+    """Average k x k blocks, ignoring NaN. Keeps memory small on a weak laptop."""
     if k == 1:
         return a
     h, w = (a.shape[0] // k) * k, (a.shape[1] // k) * k
@@ -61,7 +60,7 @@ def load_modis_pair(ndvi_path, qa_path, block=1):
 
 
 def find_pairs(folder):
-    
+    """Return {year: [(ndvi_path, qa_path), ...]} by matching the doyYYYYDDD token."""
     qa_by_date = {}
     for p in glob.glob(os.path.join(folder, f"*{QA_TAG}*.tif")):
         m = DATE_RE.search(os.path.basename(p))
@@ -76,7 +75,7 @@ def find_pairs(folder):
 
 
 def load_annual_ndvi(folder=DATA_DIR):
-    
+    """Stream one year at a time so only the annual cubes stay in memory."""
     by_year = find_pairs(folder)
     if len(by_year) < 12:
         raise SystemExit(f"Found {len(by_year)} usable years in '{folder}'. The trend tool needs a "
@@ -104,10 +103,9 @@ def load_annual_ndvi(folder=DATA_DIR):
     return years, {k: np.stack(v) for k, v in annual.items()}, meta
 
 
-
+# --------------------------------------------------------------------------
 # Statistics (unchanged logic from the temperature version)
-
-
+# --------------------------------------------------------------------------
 def trend_stats(arr, x, min_frac=MIN_VALID_FRAC):
     arr = np.asarray(arr, dtype=float)
     x = np.asarray(x, dtype=float)
@@ -150,7 +148,7 @@ def fdr_mask(p, alpha=ALPHA):
 
 
 def region_series(annual, row, col, half_px):
-   
+    """Mean NDVI of the square window around (row, col), one value per year."""
     r0, r1 = max(0, row - half_px), min(annual.shape[1], row + half_px + 1)
     c0, c1 = max(0, col - half_px), min(annual.shape[2], col + half_px + 1)
     if r0 >= r1 or c0 >= c1:
@@ -179,7 +177,7 @@ def analyze_series(x, y):
 
 
 def plain_summary(res, start, end, alpha=ALPHA):
-    
+    """One plain-language sentence plus a colour for it."""
     if res is None:
         return "Not enough valid data in this region and window.", "0.4"
     direction = "greening" if res["ts"] > 0 else "browning"
@@ -207,10 +205,9 @@ def pixel_size_m(meta, shape):
     return abs(t.a)
 
 
-
+# --------------------------------------------------------------------------
 # Interactive app
-
-
+# --------------------------------------------------------------------------
 def main():
     import matplotlib
     matplotlib.use(BACKEND)
@@ -223,10 +220,10 @@ def main():
     agg_names = list(AGGREGATIONS)
     H, W = next(iter(cubes.values())).shape[1:]
     t = meta["transform"]
-    extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)       
+    extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)       # left, right, bottom, top
     px_m = pixel_size_m(meta, (H, W))
 
-    state = {"pt": (H // 2, W // 2)}                         
+    state = {"pt": (H // 2, W // 2)}                         # start in the middle of the San Juan area
 
     fig = plt.figure(figsize=(14, 7.5))
     ax = fig.add_axes([0.04, 0.34, 0.58, 0.60])
