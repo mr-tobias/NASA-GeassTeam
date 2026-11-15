@@ -15,6 +15,7 @@ from scipy import stats
 
 # Configuration
 
+<<<<<<< HEAD
 DATA_DIR = "data/modis"
 NDVI_TAG = "250m_16_days_NDVI"
 QA_TAG = "250m_16_days_pixel_reliability"
@@ -36,10 +37,23 @@ MAX_YEAR = 2025
 MIN_COMPOSITES = 12
 BBOX = (-68.70, -31.70, -68.35, -31.40)
 MAX_SIDE = 500
+=======
+
+DATA_DIR = "data/modis_fake"                
+NDVI_TAG = "250m_16_days_NDVI"          
+QA_TAG = "250m_16_days_pixel_reliability"
+DATE_RE = re.compile(r"doy(\d{4})(\d{3})")   
+SCALE = 0.0001                          # MODIS NDVI scale factor
+VALID_RANGE = (-0.2, 1.0)               # physically sensible NDVI after scaling
+GOOD_QA = (0,)                          
+MIN_COMPOSITES = 12                     
+MAX_SIDE = 500                          
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
 ALPHA = 0.05
 MIN_VALID_FRAC = 0.6
 BACKEND = "TkAgg"
 AGGREGATIONS = {"Annual mean": np.nanmean, "Annual peak": np.nanmax}
+<<<<<<< HEAD
 OUTPUT_DIR = "outputs"
 CITIES = [("San Juan", -31.5375, -68.5364)]
 
@@ -49,6 +63,17 @@ CITIES = [("San Juan", -31.5375, -68.5364)]
 
 def block_mean(a, k):
 
+=======
+OUTPUT_DIR = "outputs"                  
+CITIES = [("San Juan", -31.5375, -68.5364)]   
+
+
+# Data: MODIS GeoTIFF time series
+
+
+def block_mean(a, k):
+    
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
     if k == 1:
         return a
     h, w = (a.shape[0] // k) * k, (a.shape[1] // k) * k
@@ -84,7 +109,11 @@ def load_modis_pair(ndvi_path, qa_path, block=1):
 
 
 def find_pairs(folder):
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
     qa_by_date = {}
     for p in glob.glob(os.path.join(folder, f"*{QA_TAG}*.tif")):
         k = date_key(os.path.basename(p))
@@ -103,7 +132,11 @@ def find_pairs(folder):
 
 
 def load_annual_ndvi(folder=DATA_DIR):
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
     by_year = find_pairs(folder)
     if len(by_year) < 12:
         raise SystemExit(f"Found {len(by_year)} usable years in '{folder}'. The trend tool needs a "
@@ -137,7 +170,12 @@ def load_annual_ndvi(folder=DATA_DIR):
 
 
 
+<<<<<<< HEAD
 # Statistics
+=======
+# Statistics (unchanged logic from the temperature version)
+
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
 
 def trend_stats(arr, x, min_frac=MIN_VALID_FRAC):
     arr = np.asarray(arr, dtype=float)
@@ -181,7 +219,11 @@ def fdr_mask(p, alpha=ALPHA):
 
 
 def region_series(annual, row, col, half_px):
+<<<<<<< HEAD
 
+=======
+   
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
     r0, r1 = max(0, row - half_px), min(annual.shape[1], row + half_px + 1)
     c0, c1 = max(0, col - half_px), min(annual.shape[2], col + half_px + 1)
     if r0 >= r1 or c0 >= c1:
@@ -210,7 +252,11 @@ def analyze_series(x, y):
 
 
 def plain_summary(res, start, end, alpha=ALPHA):
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
     if res is None:
         return "Not enough valid data in this region and window.", "0.4"
     direction = "greening" if res["ts"] > 0 else "browning"
@@ -241,6 +287,10 @@ def pixel_size_m(meta, shape):
 
 # Interactive app
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
 def main():
     import matplotlib
     matplotlib.use(BACKEND)
@@ -253,10 +303,17 @@ def main():
     agg_names = list(AGGREGATIONS)
     H, W = next(iter(cubes.values())).shape[1:]
     t = meta["transform"]
+<<<<<<< HEAD
     extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)
     px_m = pixel_size_m(meta, (H, W))
 
     state = {"pt": (H // 2, W // 2)}
+=======
+    extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)       
+    px_m = pixel_size_m(meta, (H, W))
+
+    state = {"pt": (H // 2, W // 2)}                         
+>>>>>>> parent of 63ca478 (Revert "Merge branch 'main' of https://github.com/mr-tobias/NASA-GeassTeam")
 
     fig = plt.figure(figsize=(14, 7.5))
     ax = fig.add_axes([0.04, 0.34, 0.58, 0.60])
