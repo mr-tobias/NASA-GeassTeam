@@ -9,46 +9,33 @@ from datetime import datetime
 
 import numpy as np
 import rasterio
-import rasterio.windows
 from scipy import stats
 
-
+# --------------------------------------------------------------------------
 # Configuration
-
-DATA_DIR = "data/modis"
-NDVI_TAG = "250m_16_days_NDVI"
+# --------------------------------------------------------------------------
+DATA_DIR = "data/modis_fake"                 # folder with ALL 16-day GeoTIFFs (2000-present)
+NDVI_TAG = "250m_16_days_NDVI"          # text that identifies NDVI files
 QA_TAG = "250m_16_days_pixel_reliability"
-DATE_RES = [re.compile(r"doy(\d{4})(\d{3})"),
-            re.compile(r"_(\d{4})(\d{2})(\d{2})T\d{6}")]
-
-
-def date_key(filename):
-
-    for rx in DATE_RES:
-        m = rx.search(filename)
-        if m:
-            return int(m.group(1)), "".join(m.groups())
-    return None
+DATE_RE = re.compile(r"doy(\d{4})(\d{3})")   # AppEEARS naming: ..._doy2020017000000_...
 SCALE = 0.0001                          # MODIS NDVI scale factor
 VALID_RANGE = (-0.2, 1.0)               # physically sensible NDVI after scaling
-GOOD_QA = (0,)
-MAX_YEAR = 2025
-MIN_COMPOSITES = 12
-BBOX = (-68.70, -31.70, -68.35, -31.40)
-MAX_SIDE = 500
+GOOD_QA = (0,)                          # 0 = good; use (0, 1) to also accept marginal
+MIN_COMPOSITES = 12                     # a cell needs this many valid 16-day composites per year
+MAX_SIDE = 500                          # block-average so the grid is at most this big (4 GB RAM!)
 ALPHA = 0.05
 MIN_VALID_FRAC = 0.6
 BACKEND = "TkAgg"
 AGGREGATIONS = {"Annual mean": np.nanmean, "Annual peak": np.nanmax}
-OUTPUT_DIR = "outputs"
-CITIES = [("San Juan", -31.5375, -68.5364)]
+OUTPUT_DIR = "outputs"                  # where the Save button writes PNG + CSV
+CITIES = [("San Juan", -31.5375, -68.5364)]   # (label, lat, lon) reference points on the map
 
 
-
-# Data: MODIS GeoTIFF
-
+# --------------------------------------------------------------------------
+# Data: MODIS GeoTIFF time series -> annual NDVI cube (year, row, col)
+# --------------------------------------------------------------------------
 def block_mean(a, k):
-
+    """Average k x k blocks, ignoring NaN. Keeps memory small on a weak laptop."""
     if k == 1:
         return a
     h, w = (a.shape[0] // k) * k, (a.shape[1] // k) * k
@@ -57,66 +44,46 @@ def block_mean(a, k):
         return np.nanmean(a[:h, :w].reshape(h // k, k, w // k, k), axis=(1, 3))
 
 
-def get_window(src):
-
-    if BBOX is None:
-        return None
-    w, s, e, n = BBOX
-    win = rasterio.windows.from_bounds(w, s, e, n, transform=src.transform)
-    return win.round_offsets().round_lengths()
-
-
 def load_modis_pair(ndvi_path, qa_path, block=1):
     with rasterio.open(ndvi_path) as n_src, rasterio.open(qa_path) as q_src:
         if (n_src.width, n_src.height, n_src.crs, n_src.transform) != \
            (q_src.width, q_src.height, q_src.crs, q_src.transform):
             raise ValueError(f"NDVI and QA not aligned: {ndvi_path}")
-        win = get_window(n_src)
-        ndvi = n_src.read(1, masked=True, window=win).astype("float32") * SCALE
-        qa = q_src.read(1, masked=True, window=win)
+        ndvi = n_src.read(1, masked=True).astype("float32") * SCALE
+        qa = q_src.read(1, masked=True)
         bad = (np.ma.getmaskarray(ndvi) | np.ma.getmaskarray(qa)
                | ~np.isin(qa.data, GOOD_QA)
                | (ndvi.data < VALID_RANGE[0]) | (ndvi.data > VALID_RANGE[1]))
         out = np.where(bad, np.nan, ndvi.data).astype("float32")
-        tr = n_src.window_transform(win) if win is not None else n_src.transform
-        meta = {"crs": n_src.crs, "transform": tr * tr.scale(block)}
+        meta = {"crs": n_src.crs, "transform": n_src.transform * n_src.transform.scale(block)}
     return block_mean(out, block), meta
 
 
 def find_pairs(folder):
-
+    """Return {year: [(ndvi_path, qa_path), ...]} by matching the doyYYYYDDD token."""
     qa_by_date = {}
     for p in glob.glob(os.path.join(folder, f"*{QA_TAG}*.tif")):
-        k = date_key(os.path.basename(p))
-        if k:
-            qa_by_date[k[1]] = p
+        m = DATE_RE.search(os.path.basename(p))
+        if m:
+            qa_by_date[m.groups()] = p
     by_year = defaultdict(list)
-    n_ndvi = 0
     for p in sorted(glob.glob(os.path.join(folder, f"*{NDVI_TAG}*.tif"))):
-        n_ndvi += 1
-        k = date_key(os.path.basename(p))
-        if k and k[1] in qa_by_date:
-            by_year[k[0]].append((p, qa_by_date[k[1]]))
-    print(f"Found {n_ndvi} NDVI files and {len(qa_by_date)} reliability files; "
-          f"{sum(len(v) for v in by_year.values())} matched pairs.")
+        m = DATE_RE.search(os.path.basename(p))
+        if m and m.groups() in qa_by_date:
+            by_year[int(m.group(1))].append((p, qa_by_date[m.groups()]))
     return by_year
 
 
 def load_annual_ndvi(folder=DATA_DIR):
-
+    """Stream one year at a time so only the annual cubes stay in memory."""
     by_year = find_pairs(folder)
     if len(by_year) < 12:
         raise SystemExit(f"Found {len(by_year)} usable years in '{folder}'. The trend tool needs a "
                          "time series (>= 12 years), not a single composite. Download the full "
                          "NDVI + pixel_reliability series from AppEEARS for your San Juan area.")
     with rasterio.open(next(iter(by_year.values()))[0][0]) as s:
-        win = get_window(s)
-        wd, ht = (int(win.width), int(win.height)) if win is not None else (s.width, s.height)
-        if wd <= 0 or ht <= 0:
-            raise SystemExit("BBOX does not overlap the downloaded files. Check BBOX or set it to None.")
-        block = max(1, int(np.ceil(max(wd, ht) / MAX_SIDE)))
-        print(f"Using {wd} x {ht} pixels per file, block size {block}")
-    years = np.array([y for y in sorted(by_year) if y <= MAX_YEAR])
+        block = max(1, int(np.ceil(max(s.width, s.height) / MAX_SIDE)))
+    years = np.array(sorted(by_year))
     annual = {name: [] for name in AGGREGATIONS}
     meta = None
     for y in years:
@@ -136,9 +103,9 @@ def load_annual_ndvi(folder=DATA_DIR):
     return years, {k: np.stack(v) for k, v in annual.items()}, meta
 
 
-
-# Statistics
-
+# --------------------------------------------------------------------------
+# Statistics (unchanged logic from the temperature version)
+# --------------------------------------------------------------------------
 def trend_stats(arr, x, min_frac=MIN_VALID_FRAC):
     arr = np.asarray(arr, dtype=float)
     x = np.asarray(x, dtype=float)
@@ -181,7 +148,7 @@ def fdr_mask(p, alpha=ALPHA):
 
 
 def region_series(annual, row, col, half_px):
-
+    """Mean NDVI of the square window around (row, col), one value per year."""
     r0, r1 = max(0, row - half_px), min(annual.shape[1], row + half_px + 1)
     c0, c1 = max(0, col - half_px), min(annual.shape[2], col + half_px + 1)
     if r0 >= r1 or c0 >= c1:
@@ -210,7 +177,7 @@ def analyze_series(x, y):
 
 
 def plain_summary(res, start, end, alpha=ALPHA):
-
+    """One plain-language sentence plus a colour for it."""
     if res is None:
         return "Not enough valid data in this region and window.", "0.4"
     direction = "greening" if res["ts"] > 0 else "browning"
@@ -238,9 +205,9 @@ def pixel_size_m(meta, shape):
     return abs(t.a)
 
 
-
+# --------------------------------------------------------------------------
 # Interactive app
-
+# --------------------------------------------------------------------------
 def main():
     import matplotlib
     matplotlib.use(BACKEND)
@@ -253,10 +220,10 @@ def main():
     agg_names = list(AGGREGATIONS)
     H, W = next(iter(cubes.values())).shape[1:]
     t = meta["transform"]
-    extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)
+    extent = (t.c, t.c + t.a * W, t.f + t.e * H, t.f)       # left, right, bottom, top
     px_m = pixel_size_m(meta, (H, W))
 
-    state = {"pt": (H // 2, W // 2)}
+    state = {"pt": (H // 2, W // 2)}                         # start in the middle of the San Juan area
 
     fig = plt.figure(figsize=(14, 7.5))
     ax = fig.add_axes([0.04, 0.34, 0.58, 0.60])
@@ -274,7 +241,7 @@ def main():
     (box_line,) = ax.plot([], [], color="k", lw=1.6)
     title = ax.set_title("")
     if meta["crs"] is not None and meta["crs"].is_geographic:
-        ax.set_aspect(1 / np.cos(np.deg2rad(t.f + t.e * H / 2)))
+        ax.set_aspect(1 / np.cos(np.deg2rad(t.f + t.e * H / 2)))   # true-shape map
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
     for label, clat, clon in CITIES:                          # reference points
@@ -290,7 +257,7 @@ def main():
                    10, len(years), valinit=min(len(years), 20), valstep=1)
     s_half = Slider(fig.add_axes([0.12, 0.04, 0.42, 0.025]), "Region ± (km)",
                     1, 25, valinit=5, valstep=1)
-    radio = RadioButtons(fig.add_axes([0.58, 0.03, 0.11, 0.14]), agg_names, active=0)
+    radio = RadioButtons(fig.add_axes([0.60, 0.03, 0.09, 0.14]), agg_names, active=0)
     radio.ax.set_title("NDVI metric", fontsize=9)
     chk = CheckButtons(fig.add_axes([0.70, 0.04, 0.27, 0.10]),
                        ["Grey out non-significant cells",
@@ -309,7 +276,7 @@ def main():
         sel = (years >= start) & (years <= end)
         x = years[sel].astype(float)
 
-        #map
+        # ---- map ----
         b, p, _ = trend_stats(vals[sel], x)
         valid = np.isfinite(b)
         show_grey, use_fdr = chk.get_status()
@@ -327,7 +294,7 @@ def main():
         title.set_text(f"NDVI trend {start}–{end}  |  {frac:.0f}% of cells significant"
                        f" at {int((1 - ALPHA) * 100)}%{warn}")
 
-        #region
+        # ---- region ----
         ax_ts.clear()
         ax_info.clear()
         ax_info.axis("off")
@@ -358,7 +325,7 @@ def main():
                                  start=start, end=end, y=y.copy(), res=res)
             ax_ts.set_ylabel(f"NDVI ({metric.lower()})")
             ax_ts.grid(alpha=0.3)
-            ax_ts.legend(fontsize=8, loc="best")
+            ax_ts.legend(fontsize=8, loc="upper left")
             summary, colour = plain_summary(res, start, end)
             ax_info.text(0, 1, textwrap.fill(summary, 44), va="top", ha="left", fontsize=10,
                          fontweight="bold", color=colour, transform=ax_info.transAxes)
