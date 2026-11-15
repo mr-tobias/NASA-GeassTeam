@@ -15,7 +15,7 @@
   <header class="site-header">
     <a class="brand" href="#top"><span class="brand-mark"><img src="assets/crow-emblem.png" alt="" /></span><span>GEASS <b>TEAM</b></span></a>
     <nav aria-label="Main navigation">
-      <a href="#project">Project</a><a href="#method">Methodology</a><a href="#tool">The tool</a><a href="#limitations">Limitations</a>
+      <a href="#project">Project</a><a href="#method">Methodology</a><a href="#tool">The tool</a><a href="#limitations">Limitations</a><a href="#report">Report</a>
       <a class="nav-cta" href="src/ndvi_trend_analyzer.py" download>Download code</a>
     </nav>
     <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
@@ -30,6 +30,7 @@
         <div class="hero-actions">
           <a class="button primary" href="#project">Explore the project <span>↘</span></a>
           <a class="button secondary" href="src/ndvi_trend_analyzer.py" download>Get the Python source <span>↓</span></a>
+          <a class="button secondary" href="Earth-Trend-Detective-Project-Report.pdf" download>Download project report <span>↓</span></a>
         </div>
         <div class="hero-meta">
           <div><strong>2001–2025</strong><span>Target analysis period</span></div>
@@ -119,6 +120,21 @@
         <div class="limit-card caution"><span>!</span><h3>Cannot establish alone</h3><ul><li>The ecological cause of greening or browning.</li><li>Vegetation health, species composition, or biomass directly.</li><li>That a statistical trend is practically or ecologically important.</li><li>Reliable conclusions where data coverage or QA is inadequate.</li></ul></div>
       </div>
       <div class="note caution-note"><b>Implementation caveats to validate</b><span>The current code uses an approximate lag-1 autocorrelation adjustment for its OLS p-values; the regional Kendall test is not adjusted for serial correlation. Coordinate handling also needs verification for projected MODIS sinusoidal rasters: the map currently labels axes as longitude/latitude and places the San Juan marker using geographic coordinates. Validate the CRS and transform before interpreting map locations.</span></div>
+    </section>
+
+    <section class="section report-section" id="report">
+      <div class="section-heading"><p class="eyebrow">05 / PROJECT DOCUMENTATION</p><h2>The complete project,<br><em>in one report.</em></h2></div>
+      <div class="report-download-card">
+        <div class="report-file-icon">PDF</div>
+        <div class="report-details">
+          <p class="report-kicker">GEASS TEAM · NOVEMBER 2026 · 8 PAGES</p>
+          <h3>Earth Trend Detective — Project Report</h3>
+          <p>Includes the executive summary, challenge context, study area and dataset, methodology, statistical significance, tool description, results, limitations, future work, team information, and references.</p>
+          <a class="button primary report-button" href="Earth-Trend-Detective-Project-Report.pdf" download>
+            Download the full report <span>↓</span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <section class="affiliations" aria-labelledby="affiliations-title">

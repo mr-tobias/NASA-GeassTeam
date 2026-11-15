@@ -139,3 +139,15 @@ body { background:var(--bg); }
 .affiliation-card strong { color:var(--heading); font-size:14px; }
 .affiliation-disclaimer { max-width:700px; margin:22px auto 0; color:var(--muted); font-size:11px; text-align:center; }
 @media(max-width:640px) { .affiliation-logos { grid-template-columns:1fr; max-width:360px; } .affiliations { padding:58px 20px 65px; } }
+
+
+/* Project report download */
+.report-section{background:linear-gradient(135deg,#111116 0%,#191015 55%,#101014 100%)}
+.report-download-card{display:flex;align-items:flex-start;gap:28px;padding:clamp(24px,4vw,42px);border:1px solid rgba(191,35,55,.42);background:rgba(20,18,22,.88);box-shadow:0 18px 55px rgba(0,0,0,.2)}
+.report-file-icon{width:68px;height:82px;flex:0 0 68px;display:grid;place-items:center;background:#a91e32;color:#fff;font-family:'Fira Code',monospace;font-weight:600;letter-spacing:.08em;clip-path:polygon(0 0,72% 0,100% 25%,100% 100%,0 100%)}
+.report-details{max-width:760px}
+.report-kicker{font:11px 'Fira Code',monospace;letter-spacing:.12em;color:#d14b5a;margin:0 0 10px}
+.report-details h3{font-size:clamp(21px,3vw,30px);margin:0 0 10px;color:#f1eeee}
+.report-details>p:not(.report-kicker){color:#aaa6aa;font-size:14px;max-width:700px;margin:0 0 22px}
+.report-button{display:inline-flex;gap:20px;align-items:center}
+@media(max-width:560px){.report-download-card{gap:17px;padding:21px}.report-file-icon{width:52px;height:66px;flex-basis:52px;font-size:12px}}

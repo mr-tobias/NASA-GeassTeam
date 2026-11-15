@@ -12,3 +12,6 @@ This website is a documentation/showcase page. It does **not** run the Matplotli
 - The regional Kendall test is not adjusted for serial correlation.
 - The supplied source was syntax-checked before packaging, but its runtime behavior has not been validated against the user's complete dataset.
 
+
+## Project report
+The full 8-page report is included as `Earth-Trend-Detective-Project-Report.pdf`. The website provides download buttons in the hero and dedicated report section. Keep the PDF in the same directory as `index.html` when publishing.
