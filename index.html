@@ -3,154 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GEASS Team's NASA Space Apps Challenge project: an analysis workflow for MODIS vegetation greenness trends in San Juan, Argentina.">
-  <meta name="theme-color" content="#09090c">
-  <title>GEASS Team | Vegetation Trend Analysis</title>
+  <meta name="description" content="Earth Trend Detective — exploring vegetation change around San Juan, Argentina, using NASA MODIS satellite data.">
+  <title>Earth Trend Detective | GEASS Team</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top"><span class="brand-mark"><img src="assets/crow-emblem.png" alt="" /></span><span>GEASS <b>TEAM</b></span></a>
-    <nav aria-label="Main navigation">
-      <a href="#project">Project</a><a href="#method">Methodology</a><a href="#tool">The tool</a><a href="#limitations">Limitations</a>
-      <a class="nav-cta" href="src/ndvi_trend_analyzer.py" download>Download code</a>
+    <a class="brand" href="#top" aria-label="GEASS Team home">
+      <svg class="crow-mark" viewBox="0 0 100 76" role="img" aria-label="GEASS crow emblem">
+        <path d="M8 54 C22 47 31 37 39 24 C43 17 48 12 57 9 C54 18 56 25 64 30
+                 C72 35 82 34 93 29 C87 40 78 45 66 46 C55 47 46 43 39 37
+                 C34 47 25 57 8 62 C21 60 33 62 43 68 C30 69 18 64 8 54Z"
+              fill="currentColor"/>
+        <path d="M54 22 L72 17 L62 29Z" fill="#b51f32"/>
+        <circle cx="57" cy="20" r="2.2" fill="#f0eeee"/>
+        <path d="M15 70 C34 65 55 65 81 70" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span>GEASS <small>TEAM</small></span>
+    </a>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#interface">Interface</a>
+      <a href="#method">Method</a>
+      <a href="#report">Report</a>
     </nav>
-    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
   </header>
 
   <main id="top">
     <section class="hero">
-      <div class="hero-inner">
-        <p class="eyebrow"><span class="pulse"></span> NASA SPACE APPS CHALLENGE · 2026</p>
-        <h1>Be an Earth System<br><em>Trend Detective.</em></h1>
-        <p class="hero-lead">Investigating how vegetation greenness has changed across San Juan, Argentina, using a multi-year record of satellite observations.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#project">Explore the project <span>↘</span></a>
-          <a class="button secondary" href="src/ndvi_trend_analyzer.py" download>Get the Python source <span>↓</span></a>
-        </div>
+      <div class="hero-copy">
+        <p class="eyebrow">NASA SPACE APPS CHALLENGE · 2026</p>
+        <h1>Earth Trend<br><span>Detective.</span></h1>
+        <p class="lead">Detecting vegetation change in San Juan, Argentina, with NASA MODIS satellite data.</p>
         <div class="hero-meta">
-          <div><strong>2001–2025</strong><span>Target analysis period</span></div>
-          <div><strong>MODIS</strong><span>Satellite data source</span></div>
-          <div><strong>NDVI</strong><span>Vegetation index</span></div>
+          <span>GEASS TEAM</span><i></i><span>2001—2025</span><i></i><span>250 M RESOLUTION</span>
         </div>
+        <a class="primary-button" href="Earth-Trend-Detective-Project-Report.pdf" download>
+          <span>Download full project report</span><b>↓</b>
+        </a>
       </div>
-      <div class="hero-art" aria-label="GEASS crow emblem over a satellite data motif">
-        <img class="hero-crow" src="assets/crow-emblem.png" alt="Stylized dark crow with a crimson eye, the GEASS Team emblem">
-        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-        <div class="earth">
-          <div class="earth-grid"></div><div class="earth-land land-one"></div><div class="earth-land land-two"></div>
-          <div class="scan-line"></div>
-        </div>
-        <div class="data-tag tag-a"><span>NDVI</span><b>TIME SERIES</b></div>
-        <div class="data-tag tag-b"><span>MODIS</span><b>16-DAY COMPOSITES</b></div>
-        <div class="data-tag tag-c"><span>2001 → 2025</span><b>TEMPORAL WINDOW</b></div>
+      <div class="hero-emblem" aria-hidden="true">
+        <div class="emblem-ring"></div>
+        <svg viewBox="0 0 300 220">
+          <path d="M20 160 C73 134 92 91 117 54 C131 33 153 20 180 13
+                   C169 40 175 62 197 79 C221 97 252 94 283 77
+                   C264 111 238 128 202 131 C169 134 143 121 122 101
+                   C104 133 75 164 20 181 C61 174 99 180 129 201
+                   C90 205 49 190 20 160Z" fill="currentColor"/>
+          <path d="M171 53 L230 37 L197 76Z" fill="#b51f32"/>
+          <circle cx="181" cy="48" r="5" fill="#e9e7e5"/>
+          <path d="M39 207 C100 190 171 190 259 208" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+        <p>OBSERVE · ANALYZE · UNDERSTAND</p>
       </div>
     </section>
 
-    <section class="stats-strip" aria-label="Project parameters">
-      <div><span class="stat-label">STUDY AREA</span><strong>San Juan, Argentina</strong></div>
-      <div><span class="stat-label">OBSERVATION</span><strong>Vegetation greenness</strong></div>
-      <div><span class="stat-label">SPATIAL DATA</span><strong>MODIS GeoTIFF</strong></div>
-      <div><span class="stat-label">PROCESSING</span><strong>Python · Rasterio · NumPy</strong></div>
-    </section>
-
-    <section class="section" id="project">
-      <div class="section-heading"><p class="eyebrow">01 / THE INVESTIGATION</p><h2>A changing landscape,<br><em>measured from space.</em></h2></div>
-      <div class="two-column">
-        <div class="prose">
-          <p class="large-copy">Satellite observations make it possible to study vegetation patterns over long periods, including places where ground measurements are sparse.</p>
-          <p>This project focuses on the spatial and temporal behavior of vegetation greenness in a selected area of San Juan. It uses MODIS vegetation-index observations to build annual summaries and estimate where NDVI has increased or decreased over time.</p>
-          <p class="question"><span>RESEARCH QUESTION</span>How has vegetation greenness changed spatially and temporally across the selected area of San Juan between 2001 and 2025, and which areas show persistent greening or browning trends?</p>
-        </div>
-        <aside class="principle-card">
-          <span class="card-kicker">INTERPRETATION PRINCIPLE</span>
-          <div class="big-symbol">≈</div>
-          <h3>Greenness is a signal.<br>Not a complete diagnosis.</h3>
-          <p>NDVI describes the contrast between near-infrared and red reflectance. It does not independently establish vegetation health, biomass, water availability, or the cause of a trend.</p>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section method-section" id="method">
-      <div class="section-heading"><p class="eyebrow">02 / METHODOLOGY</p><h2>From satellite pixels<br><em>to trend evidence.</em></h2></div>
-      <div class="pipeline">
-        <article class="pipeline-step"><span class="step-number">01</span><div class="step-icon">▦</div><h3>Input rasters</h3><p>Load MODIS NDVI and Pixel Reliability GeoTIFFs, pairing files by acquisition date.</p><small>GeoTIFF · Rasterio</small></article>
-        <article class="pipeline-step"><span class="step-number">02</span><div class="step-icon">⌁</div><h3>Quality control</h3><p>Check grid alignment, apply the 0.0001 scale factor, and mask invalid or unwanted QA pixels.</p><small>QA = good by default</small></article>
-        <article class="pipeline-step"><span class="step-number">03</span><div class="step-icon">▤</div><h3>Annual summaries</h3><p>Aggregate valid 16-day composites into annual mean and annual peak NDVI layers.</p><small>Minimum 12 composites</small></article>
-        <article class="pipeline-step"><span class="step-number">04</span><div class="step-icon">↗</div><h3>Trend analysis</h3><p>Estimate linear and Theil–Sen slopes, evaluate Kendall association, and apply FDR screening.</p><small>Pixel-wise · Regional</small></article>
-      </div>
-      <div class="note"><b>Processing note</b><span>The script reduces raster resolution through block averaging when the input grid exceeds the configured maximum side length. This is a memory-saving trade-off, not a substitute for testing on the target hardware.</span></div>
-    </section>
-
-    <section class="section tool-section" id="tool">
-      <div class="section-heading"><p class="eyebrow">03 / SOFTWARE</p><h2>An interactive desktop<br><em>analysis tool.</em></h2></div>
-      <div class="tool-layout">
-        <div class="tool-preview">
-          <div class="window-bar"><i></i><i></i><i></i><span>NDVI TREND ANALYZER</span></div>
-          <div class="mock-map">
-            <div class="map-grid"></div><div class="map-blob blob-one"></div><div class="map-blob blob-two"></div><div class="map-blob blob-three"></div>
-            <div class="map-legend"><span>MORE BROWNING</span><div class="legend-gradient"></div><span>MORE GREENING</span></div>
-            <span class="map-label">ILLUSTRATIVE UI CONCEPT — NOT ANALYSIS OUTPUT</span>
-          </div>
-          <div class="mock-controls"><span>END YEAR <b>2025</b></span><span>WINDOW <b>20 YRS</b></span><span>REGION <b>±5 KM</b></span></div>
-        </div>
-        <div class="tool-description">
-          <p class="large-copy">The supplied Python program is a local desktop application built with Matplotlib.</p>
-          <ul class="feature-list">
-            <li><b>Explore a map:</b> inspect the spatial distribution of estimated NDVI trends.</li>
-            <li><b>Select a region:</b> click the map and inspect a regional annual time series.</li>
-            <li><b>Adjust the analysis:</b> change the end year, time window, region size, and annual metric.</li>
-            <li><b>Export:</b> save the current figure and regional yearly values as PNG and CSV.</li>
-          </ul>
-          <a class="text-link" href="src/ndvi_trend_analyzer.py" download>Download ndvi_trend_analyzer.py <span>↓</span></a>
-          <p class="small-muted">This website documents the Python application; it does not execute the desktop GUI in the browser.</p>
+    <section class="intro section" id="overview">
+      <div class="section-label">01 / THE PROJECT</div>
+      <div class="intro-content">
+        <h2>Turning satellite observations into evidence people can explore.</h2>
+        <p>Earth Trend Detective is an interactive Python tool that analyzes long-term changes in vegetation greenness. It maps the direction and magnitude of NDVI trends, tests their statistical significance, and lets users inspect selected regions through time series and complementary trend estimates.</p>
+        <div class="stat-grid">
+          <div><strong>25</strong><span>years of data</span></div>
+          <div><strong>250<span class="unit">m</span></strong><span>pixel resolution</span></div>
+          <div><strong>23</strong><span>composites per year</span></div>
+          <div><strong>3</strong><span>trend approaches</span></div>
         </div>
       </div>
-      <div class="stack-row"><span>TECH STACK</span><b>Python</b><b>NumPy</b><b>Rasterio</b><b>SciPy</b><b>Matplotlib</b><b>CSV</b></div>
     </section>
 
-    <section class="section limitations-section" id="limitations">
-      <div class="section-heading"><p class="eyebrow">04 / SCIENTIFIC INTEGRITY</p><h2>What the analysis can<br><em>and cannot claim.</em></h2></div>
-      <div class="limits-grid">
-        <div class="limit-card positive"><span>✓</span><h3>Can help identify</h3><ul><li>Areas with increasing or decreasing NDVI estimates.</li><li>Differences between annual mean and annual peak metrics.</li><li>Regional time-series patterns within the selected study area.</li><li>Where estimated trends pass the configured statistical screening.</li></ul></div>
-        <div class="limit-card caution"><span>!</span><h3>Cannot establish alone</h3><ul><li>The ecological cause of greening or browning.</li><li>Vegetation health, species composition, or biomass directly.</li><li>That a statistical trend is practically or ecologically important.</li><li>Reliable conclusions where data coverage or QA is inadequate.</li></ul></div>
+    <section class="interface-section section" id="interface">
+      <div class="section-label">02 / THE INTERFACE</div>
+      <div class="section-heading">
+        <h2>Read the landscape.<br><span>Interrogate the trend.</span></h2>
+        <p>The map below is the project's supplied NDVI trend visualization. It shows the spatial pattern, the San Juan reference marker, and the selected analysis window.</p>
       </div>
-      <div class="note caution-note"><b>Implementation caveats to validate</b><span>The current code uses an approximate lag-1 autocorrelation adjustment for its OLS p-values; the regional Kendall test is not adjusted for serial correlation. Coordinate handling also needs verification for projected MODIS sinusoidal rasters: the map currently labels axes as longitude/latitude and places the San Juan marker using geographic coordinates. Validate the CRS and transform before interpreting map locations.</span></div>
+      <figure class="interface-figure">
+        <img src="assets/ndvi-trend-map.png" alt="NDVI trend map for the San Juan study area, showing greening and browning pixels from 2000 to 2012.">
+        <figcaption><span>FIG. 01</span> NDVI trend map · supplied project visualization</figcaption>
+      </figure>
+      <p class="image-note">This image is a visualization supplied with the project. Its displayed window is 2000–2012; the full project report describes the broader 2001–2025 analysis period.</p>
     </section>
 
-    <section class="affiliations" aria-labelledby="affiliations-title">
-      <div class="affiliations-heading">
-        <p class="eyebrow">CHALLENGE CONTEXT</p>
-        <h2 id="affiliations-title">Built for the <em>Space Apps Challenge.</em></h2>
-        <p>GEASS Team developed this project as a participant in the NASA Space Apps Challenge 2026.</p>
+    <section class="method section" id="method">
+      <div class="section-label">03 / HOW IT WORKS</div>
+      <h2>From raw pixels to defensible trends.</h2>
+      <div class="steps">
+        <article><span>01</span><h3>Acquire</h3><p>MODIS/Terra MOD13Q1 Version 6.1 NDVI and pixel-reliability data from NASA AppEEARS.</p></article>
+        <article><span>02</span><h3>Prepare</h3><p>Pair rasters by date, check alignment, apply the scale factor, and filter unreliable observations.</p></article>
+        <article><span>03</span><h3>Aggregate</h3><p>Summarize 16-day composites into annual mean or annual peak NDVI values.</p></article>
+        <article><span>04</span><h3>Test</h3><p>Estimate trends with OLS, Theil–Sen, and Mann–Kendall; apply false-discovery-rate correction.</p></article>
       </div>
-      <div class="affiliation-logos">
-        <div class="affiliation-card">
-          <img class="space-apps-logo" src="assets/space-apps-challenge.png" alt="NASA Space Apps Challenge logo" />
-          <span>CHALLENGE</span>
-          <strong>NASA Space Apps Challenge</strong>
+    </section>
+
+    <section class="report-section section" id="report">
+      <div class="section-label">04 / PROJECT DOCUMENTATION</div>
+      <div class="report-card">
+        <div class="report-icon">PDF</div>
+        <div class="report-copy">
+          <p class="eyebrow">FULL TECHNICAL REPORT · 8 PAGES</p>
+          <h2>Earth Trend Detective</h2>
+          <p>Study area and data, methodology, statistical significance, tool design, results, limitations, future work, and references.</p>
+          <a class="download-link" href="Earth-Trend-Detective-Project-Report.pdf" download>
+            Download project report <span>↓</span>
+          </a>
         </div>
-        <div class="affiliation-card">
-          <img class="nasa-logo" src="assets/nasa-insignia.png" alt="NASA insignia" />
-          <span>SPACE AGENCY</span>
-          <strong>NASA</strong>
-        </div>
       </div>
-      <p class="affiliation-disclaimer">Logos are shown to identify the challenge and agency associated with this event. Their appearance does not imply endorsement of this project.</p>
     </section>
 
-    <section class="closing">
-      <p class="eyebrow">GEASS TEAM · NASA SPACE APPS CHALLENGE</p>
-      <h2>Evidence first.<br><em>Interpretation second.</em></h2>
-      <p>No result is presented here as a finding until it has been generated from the validated dataset and checked.</p>
-      <a class="button primary" href="src/ndvi_trend_analyzer.py" download>Download the source code <span>↓</span></a>
+    <section class="acknowledgements">
+      <p class="eyebrow">BUILT FOR</p>
+      <h2>NASA Space Apps Challenge</h2>
+      <p>Earth science · Open data · Open-source tools</p>
+      <div class="ack-line"></div>
+      <p class="disclaimer">NASA and NASA Space Apps Challenge are acknowledged as data providers and challenge organizers. This project is independently developed by GEASS Team and is not an official NASA product or endorsement.</p>
     </section>
   </main>
 
-  <footer><a class="brand" href="#top"><span class="brand-mark"><img src="assets/crow-emblem.png" alt="" /></span><span>GEASS <b>TEAM</b></span></a><span>NASA Space Apps Challenge · 2026</span><a href="#top">Back to top ↑</a></footer>
-  <script src="script.js"></script>
+  <footer><span>GEASS TEAM</span><span>EARTH TREND DETECTIVE · 2026</span></footer>
 </body>
 </html>

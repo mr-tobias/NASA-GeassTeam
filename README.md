@@ -1,7 +1,8 @@
-# GEASS Team — MODIS Vegetation Trend Project Website
+# GEASS Team — Earth Trend Detective
 
-A responsive, static project website documenting the supplied Python NDVI analysis application.
+Static project website for the NASA Space Apps Challenge project.
 
+<<<<<<< Updated upstream
 This website is a documentation/showcase page. It does **not** run the Matplotlib desktop GUI in the browser.
 
 ## Important scientific and technical notes
@@ -12,3 +13,18 @@ This website is a documentation/showcase page. It does **not** run the Matplotli
 - The regional Kendall test is not adjusted for serial correlation.
 - The supplied source was syntax-checked before packaging, but its runtime behavior has not been validated against the user's complete dataset.
 
+=======
+## Files
+- `index.html` — website
+- `style.css` — dark charcoal/crimson styling
+- `assets/ndvi-trend-map.png` — supplied NDVI trend map, used as the interface image
+- `Earth-Trend-Detective-Project-Report.pdf` — supplied 8-page project report, linked by download buttons
+
+## Publish with GitHub Pages
+1. Upload the *contents* of this folder to the root of your repository.
+2. Confirm `index.html` is at the repository root and keep the `assets` folder and PDF beside it.
+3. In GitHub, open **Settings → Pages**.
+4. Choose **Deploy from a branch**, select `main` and `/(root)`, then save.
+
+The report PDF is included unchanged from the supplied file. The screenshot is also used as supplied. The screenshot displays a 2000–2012 window, while the report describes the broader 2001–2025 project period; the page explicitly distinguishes them.
+>>>>>>> Stashed changes
